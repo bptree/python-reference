@@ -20,8 +20,8 @@ class Counter(Generic[T]):
 
 
 def _generate_index_hash(x: int) -> Hash:
-    return generate_hash(range(x))
+    return generate_hash(4, range(x))
 
 
 def _generate_sign_hash() -> Hash:
-    return generate_hash([-1, 1])
+    return generate_hash(4, [-1, 1])
