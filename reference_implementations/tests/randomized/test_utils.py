@@ -1,4 +1,4 @@
-from countsketch.utils import median
+from randomized.utils import median
 from itertools import permutations
 from unittest import main, TestCase
 

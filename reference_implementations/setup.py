@@ -34,7 +34,7 @@ class TestCommand(OptionlessCommand):
         sys.exit(subprocess.call([sys.executable] + TEST_ARGS))
 
 
-MODULES = ['countsketch']
+MODULES = ['countsketch', 'randomized']
 
 
 class CoverageCommand(OptionlessCommand):
@@ -68,15 +68,15 @@ class TypecheckCommand(OptionlessCommand):
 
 
 class LintCommand(OptionlessCommand):
-    description = 'lints the code with pep8'
+    description = 'lints the code with pycodestyle'
 
     def run(self):
         sys.exit(subprocess.call(['pycodestyle'] + MODULES))
 
 
-setup(name='countsketch',
+setup(name='randomized',
       version='1.0',
-      description='Countsketch implementation',
+      description='Randomized algorithm implementations',
       author='Bailey Parker',
       author_email='b@ileyparker.com',
       cmdclass={

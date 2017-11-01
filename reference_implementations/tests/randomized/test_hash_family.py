@@ -1,5 +1,5 @@
 from unittest import main, TestCase
-from countsketch.hash_family import Hash
+from randomized.hash_family import Hash
 
 
 class TestHashFamily(TestCase):

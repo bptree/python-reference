@@ -1,4 +1,4 @@
-from countsketch.hash_family import generate_hash, Hash
+from randomized.hash_family import generate_hash, Hash
 from typing import Generic, Hashable, TypeVar
 
 T = TypeVar('T', bound=Hashable)

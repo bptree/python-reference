@@ -1,6 +1,6 @@
 from countsketch.counter import Counter
 from countsketch.sized_counter import SizedCounter
-from countsketch.utils import median
+from randomized.utils import median
 from typing import Generic, Hashable, Iterable, List, Optional, Tuple, TypeVar
 
 T = TypeVar('T', bound=Hashable)
