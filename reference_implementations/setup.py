@@ -34,7 +34,7 @@ class TestCommand(OptionlessCommand):
         sys.exit(subprocess.call([sys.executable] + TEST_ARGS))
 
 
-MODULES = ['countsketch', 'randomized']
+MODULES = ['countsketch', 'randomized', 'bptree']
 
 
 class CoverageCommand(OptionlessCommand):
