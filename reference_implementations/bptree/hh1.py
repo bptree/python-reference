@@ -54,7 +54,7 @@ class HH1(object):
         raise NotImplementedError
 
     def calculate_R(self, sigma, n)
-        raise NotImplementedError
+        return 3*floor(log(min(n,sigma**2)+1,2))
 
     def generate_Z(self, bits):
         raise NotImplementedError
