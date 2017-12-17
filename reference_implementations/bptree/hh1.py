@@ -1,6 +1,7 @@
 """
 Implementation of BPTree based on the paper by Braverman et al
 """
+import random
 from math import floor,log
 
 class HH1(object):
@@ -12,7 +13,7 @@ class HH1(object):
         self.n = n
         self.R = self.calculate_R()
         self.Z = self.generate_Z()
-        self.b = [0]*R
+        self.b = [0]*(self.R+1)
         self.X = (0,0)
         self.r = 1
         self.H = -1
@@ -58,5 +59,9 @@ class HH1(object):
         return 3*floor(log(min(self.n,self.sigma**2)+1,2))
 
     def generate_Z(self):
-        raise NotImplementedError
+        z = []
+        for i in range(self.n+1):
+            # TODO: Talk to Bailey about this method of randomness
+            z.append(random.choice([1,-1]))
+        return z
 
