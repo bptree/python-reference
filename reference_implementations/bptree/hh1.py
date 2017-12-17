@@ -48,7 +48,7 @@ class HH1(object):
                 self.Z = self.generate_Z(n)
 
     def get_value(self):
-        return b
+        return self.H
 
     def hash_func(self, item, bit):
         raise NotImplementedError
