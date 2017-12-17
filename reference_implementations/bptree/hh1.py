@@ -1,4 +1,3 @@
-from collections import defaultdict
 from math import floor, log2
 import random
 from randomized.hash_family import generate_hash
@@ -15,15 +14,20 @@ class HH1:
         self.R = 3 * floor(log2(min(n, sigma**2) + 1))
         self.Z = self.generate_Z()
         self.h = generate_hash(2, range(2**self.R))
-        self.b = [0] * (self.R + 1)
+        self.b = [0] * (self.R + 1) # Waste slot 0 to index at 1
         self.X = [0, 0]
         self.r = 1
         self.H = -1
+        self.isDone = False
+        self.index = 0
 
     def compute_next(self, item):
         # If we've figured out all the bits, quit
-        if self.r >= self.R + 1:  # TODO: Confirm this +1 is okay
-            return True
+        self.index += 1
+
+        if self.r > self.R:
+            self.isDone = True
+            return
 
         hash_item = self.h(item)
         match = True
@@ -37,13 +41,14 @@ class HH1:
         # If it does match the HH, add its contribution to X_0/1
         if match:
             self.H = item
-            self.X[HH1.get_bit(hash_item, self.r)] = \
-                self.X[HH1.get_bit(hash_item, self.r)] + self.Z[item]
+            self.X[HH1.get_bit(hash_item, self.r)] = self.X[HH1.get_bit(hash_item, self.r)] + self.Z[item]
 
             # If we've seen enough items for the HH to have made itself known
             # then record the next bit into b
+            #print("C * sigma * BETA**r: {}".format(C * self.sigma * BETA**self.r))
             if abs(self.X[0] + self.X[1]) >= (C * self.sigma * BETA**self.r):
                 # Record the bit
+                #print("Recording a bit, on index {}".format(self.index))
                 self.b[self.r] = 1 if (abs(self.X[1]) > abs(self.X[0])) else 0
 
                 # Refresh everything
@@ -62,26 +67,3 @@ class HH1:
     def get_bit(value, bit):
         # indexes at 1
         return (value >> (bit-1)) & 1
-
-
-def main():
-    count = defaultdict(int)
-    total = 0
-    options = ([2] * 8) + [1, 3]
-    stream = [random.choice(options) for _ in range(100000)]
-    test = HH1(5, 30)
-
-    for item in stream:
-        if test.compute_next(item) is not None:
-            count[test.get_value()] += 1
-            total += 1
-            test = HH1(5, 30)
-
-    print(count)
-    print('1:', count[1]/total)
-    print('2:', count[2]/total)
-    print('3:', count[3]/total)
-
-
-if __name__ == '__main__':
-    main()
