@@ -1,6 +1,7 @@
 """
 Implementation of BPTree based on the paper by Braverman et al
 """
+from math import floor,log
 
 class HH1(object):
 
@@ -9,9 +10,9 @@ class HH1(object):
         self.sigma = sigma
         self.stream = stream
         self.n = n
-        self.R = calculate_R(sigma, n)
-        self.Z = generate_Z(n)
-        self.b = [0*R]
+        self.R = self.calculate_R()
+        self.Z = self.generate_Z()
+        self.b = [0]*R
         self.X = (0,0)
         self.r = 1
         self.H = -1
@@ -53,9 +54,9 @@ class HH1(object):
     def hash_func(self, item, bit):
         raise NotImplementedError
 
-    def calculate_R(self, sigma, n)
-        return 3*floor(log(min(n,sigma**2)+1,2))
+    def calculate_R(self):
+        return 3*floor(log(min(self.n,self.sigma**2)+1,2))
 
-    def generate_Z(self, bits):
+    def generate_Z(self):
         raise NotImplementedError
 
