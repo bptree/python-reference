@@ -41,7 +41,8 @@ class HH1:
         # If it does match the HH, add its contribution to X_0/1
         if match:
             self.H = item
-            self.X[HH1.get_bit(hash_item, self.r)] = self.X[HH1.get_bit(hash_item, self.r)] + self.Z[item]
+            self.X[HH1.get_bit(hash_item, self.r)] = \
+                    self.X[HH1.get_bit(hash_item, self.r)] + self.Z(item)
 
             # If we've seen enough items for the HH to have made itself known
             # then record the next bit into b
@@ -60,8 +61,7 @@ class HH1:
         return self.H
 
     def generate_Z(self):
-        # TODO: Talk to Bailey about this method of randomness
-        return [random.choice([-1, 1]) for _ in range(self.n + 1)]
+        return generate_hash(4, [-1,1])
 
     @staticmethod
     def get_bit(value, bit):

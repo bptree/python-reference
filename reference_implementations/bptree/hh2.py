@@ -2,8 +2,7 @@ from bptree.f2_estimator import Brute_Force_F2_Estimator
 from bptree.hh1 import HH1
 from math import sqrt
 
-class HH2():
-
+class HH2:
     def __init__(self, n):
         self.n = n
         # This is HH1_k-1

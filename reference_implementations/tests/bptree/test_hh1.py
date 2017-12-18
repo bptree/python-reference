@@ -14,8 +14,8 @@ class TestHH1(TestCase):
         epsilon = .05
         hh1 = HH1(5, n)
 
-        self.assertEqual(n+1, len(hh1.Z))
-        for item in hh1.Z:
+        for _ in range(100000):
+            item = hh1.Z(random.randint(1,n))
             self.assertEqual(1, abs(item))
             if (item == 1):
                 count_pos += 1
@@ -96,7 +96,7 @@ class TestHH1(TestCase):
         self.assertEqual(1, hh1.r)
 
         # Round 2 : item = somthing different, same X as 1, same Z value
-        while (item == 1 or bit == not_bit or hh1.Z[item] != hh1.Z[1]):
+        while (item == 1 or bit == not_bit or hh1.Z(item) != hh1.Z(1)):
             item = random.randint(0, n)
             h_item = hh1.h(item)
             bit = HH1.get_bit(h_item, 1)
@@ -109,7 +109,7 @@ class TestHH1(TestCase):
         # Round 3 : item = somthing different, same X as 1, same Z value
         prev_item = item
         while (item == prev_item or item == 1 or bit == not_bit \
-                                 or hh1.Z[item] != hh1.Z[1]):
+                                 or hh1.Z(item) != hh1.Z(1)):
             item = random.randint(0, n)
             h_item = hh1.h(item)
             bit = HH1.get_bit(h_item, 1)
