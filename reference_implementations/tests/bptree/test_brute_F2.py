@@ -51,6 +51,16 @@ class TestBruteForceF2(TestCase):
         self.bfe.update_estimate()
         self.assertEqual(5, self.bfe.F2)
 
-    # TODO
+    # Tests that the Brute Force Estimator is still correct over a larger number
+    # of insertions.
     def test_many_update_estimate(self):
-        pass
+        num_items = 100
+        sum = 0
+        # Create and input stream
+        for _ in range(num_items):
+            self.bfe.add_item(random.randint(1, self.n))
+        # Check that the number of insertions was correct
+        sum = 0
+        for item in self.bfe.f:
+            sum += item
+        self.assertEquals(num_items, sum)

@@ -41,10 +41,22 @@ class TestHH2(TestCase):
         self.assertEqual(2, hh2.hh1_1.r) # new
         self.assertEqual(3, hh2.hh1_0.r) # old
 
-    # Verifies that hh2.get_value behaves as expected
+    # Verifies that hh2.get_value behaves as expected under three cases:
     def test_get_value(self):
-        pass
-        # TODO do the thing
+        n = 20
+        hh2 = HH2(n)
+        item = 5
+        # Case 1 : hh1_0 is None
+        self.assertEqual(None, hh2.get_value())
+        hh2.add_item(item)
+        # Case 2 : hh1_0 isn't done
+        self.assertTrue(hh2.hh1_0 is not None)
+        self.assertEqual(None, hh2.get_value())
+        # Case 3 : hh1_0 is done
+        for _ in range(100):
+            self.add_item(item)
+        self.assertTrue(hh2.hh1_0.isDone)
+        self.assertEquals(item, hh2.get_value())
 
     # Tests with a larger and somewhat more realistic stream
     def test_large_set(self):
