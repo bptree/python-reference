@@ -17,7 +17,6 @@ class TestHH2(TestCase):
         self.assertEqual(n, hh2.hh1_1.n)
         self.assertEqual(1, hh2.hh1_1.sigma)
         self.assertTrue(isinstance(hh2.estimator, F2_Estimator))
-        self.assertEqual(n+1, len(hh2.estimator.f))
         self.assertEqual(1, hh2.k)
 
     # Verifies that adding an item to HH2 behaves as expected
@@ -25,21 +24,34 @@ class TestHH2(TestCase):
         n = 5
         hh2 = HH2(n)
         item = 1
-        hh2.add_item(item)
-        # Verify the item was added to the estimator, did not create a new HH1, and was added to hh1_1 causing r = 2
-        self.assertEqual(1, hh2.estimator.f[item])
-        self.assertEqual(1, hh2.k)
-        self.assertEqual(1, hh2.estimator.update_estimate())
-        self.assertEqual(None, hh2.hh1_0)
-        self.assertEqual(2, hh2.hh1_1.r)
-        # Add another item, which will create another HH1
-        hh2.add_item(item)
-        self.assertEqual(2, hh2.estimator.f[item])
-        self.assertEqual(2, hh2.k)
-        self.assertEqual(4, hh2.estimator.update_estimate())
+        hh2.add_item(random.randint(1,n))
+        # Verify the 2^k threshold behavior and that the item was added into
+        # the appropriate hh1s, causing the respective hh1.r == 2 (because of
+        # the small n)
+        est = hh2.estimator.update_estimate()
+        if est < 2:
+            self.assertEqual(1, hh2.k)
+            self.assertTrue(hh2.hh1_0 is None)
+            self.assertEqual(1, hh2.hh1_1.sigma)
+            self.assertEqual(2, hh2.hh1_1.r)
+        else:
+            self.assertEqual(2, hh2.k)
+            self.assertTrue(hh2.hh1_0 is not None)
+            self.assertEqual(1, hh2.hh1_0.sigma)
+            self.assertEqual(est, hh2.hh1_1.sigma)
+            self.assertEqual(2, hh2.hh1_1.r)
+            self.assertEqual(2, hh2.hh1_0.r)
+        # Add items until 2^2 threshold is reached, and test result
+        iter_count = 100000
+        while (hh2.k < 3):
+            hh2.add_item(random.randint(1,n))
+            iter_count -= 1
+            if (iter_count == 0):
+                break
+        self.assertNotEqual(0, iter_count)
+        self.assertEqual(3, hh2.k)
         self.assertTrue(hh2.hh1_0 is not None)
-        self.assertEqual(2, hh2.hh1_1.r) # new
-        self.assertEqual(3, hh2.hh1_0.r) # old
+        self.assertNotEqual(hh2.hh1_1.sigma, hh2.hh1_0.sigma)
 
     # Verifies that hh2.get_value behaves as expected under three cases:
     def test_get_value(self):
