@@ -48,15 +48,16 @@ class TestHH2(TestCase):
         item = 5
         # Case 1 : hh1_0 is None
         self.assertEqual(None, hh2.get_value())
-        hh2.add_item(item)
         # Case 2 : hh1_0 isn't done
+        hh2.add_item(item)
+        hh2.add_item(item)
         self.assertTrue(hh2.hh1_0 is not None)
         self.assertEqual(None, hh2.get_value())
         # Case 3 : hh1_0 is done
         for _ in range(100):
-            self.add_item(item)
+            hh2.add_item(item)
         self.assertTrue(hh2.hh1_0.isDone)
-        self.assertEquals(item, hh2.get_value())
+        self.assertEqual(item, hh2.get_value())
 
     # Tests with a larger and somewhat more realistic stream
     def test_large_set(self):

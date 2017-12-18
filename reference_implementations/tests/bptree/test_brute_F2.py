@@ -63,4 +63,4 @@ class TestBruteForceF2(TestCase):
         sum = 0
         for item in self.bfe.f:
             sum += item
-        self.assertEquals(num_items, sum)
+        self.assertEqual(num_items, sum)
