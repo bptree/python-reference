@@ -51,3 +51,6 @@ class TestBruteForceF2(TestCase):
         self.bfe.update_estimate()
         self.assertEqual(5, self.bfe.F2)
 
+    # TODO
+    def test_many_update_estimate(self):
+        pass

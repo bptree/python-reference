@@ -19,7 +19,6 @@ class Brute_Force_F2_Estimator(F2_Estimator):
         self.f[item] += 1
 
     def update_estimate(self):
-
         self.F2 = 0
         for freq in self.f:
             self.F2 += freq**2
