@@ -1,9 +1,12 @@
-from randomized.utils import median
+from randomized.utils import mean, median
 from itertools import permutations
 from unittest import main, TestCase
 
 
 class TestUtil(TestCase):
+    def test_mean(self):
+        self.assertEqual(2, mean(range(1, 4)))
+
     def test_exact_median(self):
         for seq in permutations([1, 2, 3]):
             self.assertEqual(2, median(seq))
