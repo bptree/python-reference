@@ -1,69 +1,62 @@
+from bitarray import bitarray
 from math import floor, log2
-import random
-from randomized.hash_family import generate_hash
+from randomized.hash_family import generate_hash, Hash
+from struct import pack
+from typing import Generic, Hashable, Optional, TypeVar
 
 
-C = 1/32
-BETA = 3/4
+C = 1 / 32
+BETA = 3 / 4
+T = TypeVar('T', bound=Hashable)
 
 
-class HH1:
-    def __init__(self, sigma, n):
-        self.sigma = sigma
-        self.n = n
-        self.R = 3 * floor(log2(min(n, sigma**2) + 1))
-        self.Z = self.generate_Z()
-        self.h = generate_hash(2, range(2**self.R))
-        self.b = [0] * (self.R + 1) # Waste slot 0 to index at 1
-        self.X = [0, 0]
-        self.r = 1
-        self.H = -1
-        self.isDone = False
-        self.index = 0
+class HH1(Generic[T]):
+    def __init__(self, stddev_estimate: float, n: int) -> None:
+        self._stddev_estimate = stddev_estimate
+        self._num_hash_bits = 3 * floor(log2(min(n, stddev_estimate**2) + 1))
+        self._sign_hash = _generate_sign_hash()
+        self._hash = generate_hash(2, range(2**self._num_hash_bits))
+        self._learned_hash = bitarray()
+        self._buckets = [0, 0]
+        self._heavy_hitter = None  # type: Optional[T]
 
-    def compute_next(self, item):
-        # If we've figured out all the bits, quit
-        self.index += 1
-
-        if self.r > self.R:
-            self.isDone = True
+    def add_item(self, item: T) -> None:
+        if self.is_done():
             return
 
-        hash_item = self.h(item)
-        match = True
-
-        for j in range(1, self.r):
-            # Check if this item matches the known HH bits thus far
-            if HH1.get_bit(hash_item, j) != self.b[j]:
-                match = False
-                break
+        hash_value = int_to_bitarray(self._hash(item))
 
         # If it does match the HH, add its contribution to X_0/1
-        if match:
-            self.H = item
-            self.X[HH1.get_bit(hash_item, self.r)] = \
-                    self.X[HH1.get_bit(hash_item, self.r)] + self.Z(item)
+        if self._learned_hash == hash_value[:len(self._learned_hash)]:
+            self._heavy_hitter = item
+
+            bucket = hash_value[len(self._learned_hash)]
+            self._buckets[bucket] += self._sign_hash(item)
 
             # If we've seen enough items for the HH to have made itself known
             # then record the next bit into b
-            #print("C * sigma * BETA**r: {}".format(C * self.sigma * BETA**self.r))
-            if abs(self.X[0] + self.X[1]) >= (C * self.sigma * BETA**self.r):
+            if abs(sum(self._buckets)) >= \
+                    (C * self._stddev_estimate * BETA**len(self._learned_hash)):
                 # Record the bit
-                #print("Recording a bit, on index {}".format(self.index))
-                self.b[self.r] = 1 if (abs(self.X[1]) > abs(self.X[0])) else 0
+                bit = abs(self._buckets[1]) > abs(self._buckets[0])
+                self._learned_hash.append(bit)
 
                 # Refresh everything
-                self.X = [0, 0]
-                self.r = self.r + 1
-                self.Z = self.generate_Z()
+                self._buckets = [0, 0]
+                self._sign_hash = _generate_sign_hash()
 
-    def get_value(self):
-        return self.H
+    def get_heavy_hitter(self) -> Optional[T]:
+        return self._heavy_hitter if self.is_done() else None
 
-    def generate_Z(self):
-        return generate_hash(4, [-1,1])
+    def is_done(self) -> bool:
+        return len(self._learned_hash) == self._num_hash_bits
 
-    @staticmethod
-    def get_bit(value, bit):
-        # indexes at 1
-        return (value >> (bit-1)) & 1
+
+def int_to_bitarray(x):
+   a = bitarray()
+   a.frombytes(pack('q', x))
+   return a
+
+
+def _generate_sign_hash() -> Hash:
+    return generate_hash(4, [-1, 1])

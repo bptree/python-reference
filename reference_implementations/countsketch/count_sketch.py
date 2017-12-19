@@ -1,5 +1,6 @@
 from countsketch.counter import Counter
 from countsketch.sized_counter import SizedCounter
+from randomized.frequency_estimator import FrequencyEstimator
 from randomized.utils import median
 from typing import Generic, Hashable, Iterable, List, Optional, Tuple, TypeVar
 
@@ -8,11 +9,11 @@ T = TypeVar('T', bound=Hashable)
 
 # TODO: conform to typing.Counter and rename to Counter in __init__.py
 class CountSketch(Generic[T]):
-    def __init__(self, num_hashes: int, buckets_per_hash: int,
+    def __init__(self, num_rows: int, num_buckets: int,
                  num_heavy_hitters: int) -> None:
-        # TODO: tight coupling here, creating Counter/SizedCounter in init
-        self._counters = [Counter(buckets_per_hash)
-                          for _ in range(num_hashes)]  # type: List[Counter[T]]
+        self._frequency_estimator = \
+                FrequencyEstimator(num_rows,
+                                   num_buckets)  # type: FrequencyEstimator[T]
         self._heavy_hitters = \
             SizedCounter(num_heavy_hitters)  # type: SizedCounter[T]
 
@@ -21,17 +22,8 @@ class CountSketch(Generic[T]):
             self.add_item(item)
 
     def add_item(self, item: T) -> None:
-        for counter in self._counters:
-            counter.add_item(item)
-
-        self._heavy_hitters[item] = self.estimate_frequency(item)
-
-    def estimate_frequency(self, item: T) -> int:
-        return median([c.estimate_frequency(item) for c in self._counters])
+        self._frequency_estimator.add_item(item)
+        self._heavy_hitters[item] = self._frequency_estimator.estimate(item)
 
     def most_common(self, n: Optional[int] = None) -> List[Tuple[T, int]]:
         return self._heavy_hitters.most_common(n)
-
-
-def _make_counters(num_hashes: int, buckets_per_hash: int) -> List[Counter[T]]:
-    return [Counter(buckets_per_hash) for _ in range(num_hashes)]

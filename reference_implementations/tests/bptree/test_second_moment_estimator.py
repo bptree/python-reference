@@ -1,13 +1,16 @@
 from collections import Counter
 from bptree.second_moment_estimator import SecondMomentEstimator
-from math import fabs, floor
+from math import ceil, fabs, floor, log2
 from random import Random
 from unittest import main, TestCase
 
 
 class TestSecondMomentEstimator(TestCase):
     def run_estimator(self, items, error_margin, correctness):
-        estimator = SecondMomentEstimator(error_margin, correctness)
+        num_estimators = ceil(2 * log2(1 / correctness))
+        num_buckets = ceil(16 / (error_margin**2))
+
+        estimator = SecondMomentEstimator(num_estimators, num_buckets)
 
         for x in items:
             estimator.add_item(x)

@@ -10,6 +10,8 @@ name = "pypi"
 coverage = "*"
 mypy = "*"
 pycodestyle = "*"
+bitarray = "*"
 
 
 [dev-packages]
+

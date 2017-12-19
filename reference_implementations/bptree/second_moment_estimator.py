@@ -1,6 +1,6 @@
 from math import ceil, log2
 from randomized.hash_family import generate_hash, Hash
-from randomized.utils import assert_percentage, mean, median
+from randomized.utils import mean, median
 from typing import Generic, Hashable, List, TypeVar
 
 
@@ -9,13 +9,10 @@ T2 = TypeVar('T2', bound=Hashable)
 
 
 class SecondMomentEstimator(Generic[T1]):
-    def __init__(self, error_margin: float, correctness: float) -> None:
-        assert_percentage(correctness, 'correctness')
-
-        num_estimates = ceil(2 * log2(1 / correctness))
+    def __init__(self, num_estimators: int, num_buckets: int) -> None:
         self._estimators = \
-            [SingleEstimator(error_margin)
-             for _ in range(num_estimates)]  # type: List[SingleEstimator[T1]]
+            [SingleEstimator(num_buckets)
+             for _ in range(num_estimators)]  # type: List[SingleEstimator[T1]]
 
     def add_item(self, item: T1) -> None:
         for estimator in self._estimators:
@@ -26,10 +23,7 @@ class SecondMomentEstimator(Generic[T1]):
 
 
 class SingleEstimator(Generic[T2]):
-    def __init__(self, error_margin: float) -> None:
-        assert_percentage(error_margin, 'correctness')
-        num_buckets = ceil(16 / (error_margin ** 2))
-
+    def __init__(self, num_buckets: int) -> None:
         self._buckets = [0] * num_buckets
         self._sign_hashes = [_generate_sign_hash() for _ in range(num_buckets)]
 

@@ -5,7 +5,7 @@ from typing import Any, Counter, Hashable, TypeVar
 T = TypeVar('T', bound=Hashable)
 
 
-# TODO: more efficient than just inherting Counter behavior
+# TODO: more efficient than just inheriting Counter behavior
 class SizedCounter(Counter[T]):
     def __init__(self, max_size: int, *args: Any, **kwargs: Any) -> None:
         if max_size <= 0:
