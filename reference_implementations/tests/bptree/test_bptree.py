@@ -39,7 +39,8 @@ class TestBpTree(TestCase):
         r = Random(42)
 
         num_instances = 5
-        items = r.choices(range(3, 8), k=10) + [0] * 30 + [1] * 20
+        items = \
+            [r.choice(range(3, 16)) for _ in range(100)] + [0] * 300 + [1] * 200
         r.shuffle(items)
         error_margin, correctness = 0.25, 0.75
 

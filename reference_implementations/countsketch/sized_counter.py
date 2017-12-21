@@ -1,4 +1,5 @@
 from itertools import islice
+from collections import Counter
 from operator import itemgetter
 from typing import Any, Counter, Hashable, TypeVar
 
