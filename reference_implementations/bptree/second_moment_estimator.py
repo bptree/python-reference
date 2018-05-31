@@ -25,14 +25,18 @@ class SecondMomentEstimator(Generic[T1]):
 class SingleEstimator(Generic[T2]):
     def __init__(self, num_buckets: int) -> None:
         self._buckets = [0] * num_buckets
-        self._sign_hashes = [_generate_sign_hash() for _ in range(num_buckets)]
+        self._index_hash = _generate_index_hash(num_buckets)
+        self._sign_hash = _generate_sign_hash()
 
     def add_item(self, item: T2) -> None:
-        for i, sign_hash in enumerate(self._sign_hashes):
-            self._buckets[i] += sign_hash(item)
+        self._buckets[self._index_hash(item)] += self._sign_hash(item)
 
     def estimate(self) -> int:
-        return int(mean(bucket ** 2 for bucket in self._buckets))
+        return sum(bucket ** 2 for bucket in self._buckets)
+
+
+def _generate_index_hash(x: int) -> Hash[int]:
+    return generate_hash(4, range(x))
 
 
 def _generate_sign_hash() -> Hash:

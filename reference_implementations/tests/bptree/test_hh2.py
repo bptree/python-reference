@@ -1,12 +1,12 @@
 from bptree.hh2 import HH2
 from bptree.hh1 import HH1
-from bptree.f2_estimator import F2_Estimator
+from bptree.second_moment_estimator import SecondMomentEstimator
 import random
 from unittest import main, TestCase
 from collections import defaultdict
 
-class TestHH2(TestCase):
 
+class TestHH2(TestCase):
     # Verify HH2 initializes correctly
     def test_init(self):
         n = 30
@@ -16,7 +16,7 @@ class TestHH2(TestCase):
         self.assertTrue(isinstance(hh2.hh1_1, HH1))
         self.assertEqual(n, hh2.hh1_1.n)
         self.assertEqual(1, hh2.hh1_1.sigma)
-        self.assertTrue(isinstance(hh2.estimator, F2_Estimator))
+        self.assertTrue(isinstance(hh2.estimator, SecondMomentEstimator))
         self.assertEqual(1, hh2.k)
 
     # Verifies that adding an item to HH2 behaves as expected
